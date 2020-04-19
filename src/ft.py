@@ -34,10 +34,9 @@ def communicate(conn, client, buffer, prev_cmd):
     lines = msg.split("\n")
     fields = lines[0].split(" ")
     cmd = fields[0]
-    # print(cmd)
     if cmd == "HELLO":
         config['uoffset'] += 1
-        # json_save(config_file, config)
+        # TODO json_save(config_file, config)
 
         conn_clients[client] = "u"+str(config['uoffset'])
 
@@ -52,7 +51,7 @@ def communicate(conn, client, buffer, prev_cmd):
         save_files_dict(all_files, lines[1:])
         print(all_files)
 
-        # json_save(clients_file, clients)
+        # TODO json_save(clients_file, clients)
 
         send_msg(conn, "ACCEPTED\n\0")
         print("I have sent msg ACCEPTED")
@@ -108,11 +107,9 @@ def main():
         config['host'] = 'localhost'
         config['port'] = 45000
         config['uoffset'] = 0
-        # with open(config_file, "w", encoding="utf8") as file:
-        #     json.dump(config, file, sort_keys=True, indent=4, separators=(",", ": "))
+        # TODO json_save(config_file, config)
 
-    # some json trick with clients file
-
+    # TODO json_save(clients_file, clients)
 
     # creating socket for connection
     try:
