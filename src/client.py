@@ -3,6 +3,7 @@ import json
 import os
 import socket
 import sys
+import time
 from threading import Thread
 
 try:
@@ -22,6 +23,16 @@ shared_files_list = [
     "<hello, some_path, pdf, 258, 07/03/2018, 192.168.0.5, 7777>",
     "<hello, some_path, jpg, 158, 02/03/2018, 192.168.0.2, 7773>"
 ]
+
+
+def retrieve_gui_data(gui_data):
+    global shared_files_list
+    if not gui_data:
+        time.sleep(5)
+    else:
+        for data in gui_data:
+            file_data = "<{}, {}, {}, {}, {}>".format(data[0], data[1], data[2], data[3], data[4])
+            shared_files_list.append(file_data)
 
 
 def create_conn(addr):
@@ -64,6 +75,7 @@ def communicate(server, buffer, prev_cmd):
 
     if cmd == "HI":
         # TODO shared file list to be done via GUI
+        
         for file in shared_files_list:
             list_msg += file + "\n"
         list_msg += "\0"
@@ -80,9 +92,16 @@ def communicate(server, buffer, prev_cmd):
 
     if cmd == "FOUND:":
         print("received ", cmd)
-        # TODO choose file from GUI
-        # TODO connect to peer
 
+        # TODO requested file to be chosen from GUI
+        requested_file = "FileName, type, size"
+        lmsg = "DOWNLOAD: " + requested_file + "\n\0"
+
+        # TODO connect to peer
+        # peer = init_conn((peer_ip, peer_port))
+
+        send_msg(server, lmsg)
+        communicate(server, buffer, "DOWNLOAD")
     else:
         print("invalid command received: ", cmd)
         sys.exit(-1)
@@ -194,12 +213,6 @@ def main():
     lthread.start()
 
     lhost, lport = queue.get()
-
-    requested_file = "FileName, type, size"
-    lmsg = "DOWNLOAD: " + requested_file + "\n\0"
-
-    send_msg(server, lmsg)
-    communicate(server, buffer, "DOWNLOAD")
 
 
 if __name__ == '__main__':
