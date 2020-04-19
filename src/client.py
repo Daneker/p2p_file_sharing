@@ -11,20 +11,11 @@ config = {}
 config_file = ""
 total_files_list = []
 requested_file = ""
-shared_file_dir = ""
 
-
-def get_shared_file_dir():
-    shared_dir = ""
-    while not os.path.isdir(shared_dir):
-        print()
-        print("Enter the directory to share: ")
-        shared_dir = raw_input()
-
-        if not os.path.isdir(shared_dir):
-            print("this directory doesn't seem like a valid directory, try again")
-
-        return shared_dir
+shared_files_list = [
+    "<hello, some_path, pdf, 258, 07/03/2018, 192.168.0.5, 7777>",
+    "<hello, some_path, jpg, 158, 02/03/2018, 192.168.0.2, 7773>"
+]
 
 
 def create_conn(addr):
@@ -62,13 +53,30 @@ def communicate(server, buffer, prev_cmd):
     lines = msg.split("\n")
     fields = lines[0].split(" ")
     cmd = fields[0]
+    # print(cmd)
+    list_msg = "LIST \n"
 
     if cmd == "HI":
-        send_msg(server, "ERROR\n\0")
-        return communicate(server, buffer, "ERROR")
+        for file in shared_files_list:
+            list_msg += file + "\n"
+        list_msg += "\0"
+        send_msg(server, list_msg)
+        return communicate(server, buffer, "LIST")
+
+    if cmd == "ACCEPTED" or cmd == "NOT FOUND":
+        msg = "SEARCH: "
+        # need to be handled via GUI
+        requested_file = "hello"
+        msg += requested_file + "\n\0"
+        send_msg(server, msg)
+        return communicate(server, buffer, "SEARCH")
+
+    if cmd == "FOUND:":
+        print("received ", cmd)
+        sys.exit(-1)
 
     else:
-        print("invalid command received")
+        print("invalid command received: ", cmd)
         sys.exit(-1)
 
 
@@ -81,18 +89,12 @@ def main():
         with open(config_file, "rb") as file:
             config = json.load(file)
     else:
-        config['server_host'] = 'localhost'
-        config['server_port'] = 45000
+        config['host'] = 'localhost'
+        config['port'] = 45000
         config['client_host'] = 'localhost'
         config['client_port'] = 0
-        # config['shared_file_dir'] = get_shared_file_dir()
 
-        # with open(config_file, "w", encoding="utf8") as file:
-        #     json.dump(config, file, sort_keys=True, indent=4, separators=(",", ": "))
-
-    # shared_files = config['shared_file_dir']
-    # files_list = [file_ for file_ in os.listdir(shared_files) if
-    #               os.path.isfile(os.path.join(shared_files, file_))]
+        # json_save(config_file, config)
 
     server = create_conn((config['host'], config['port']))
 
