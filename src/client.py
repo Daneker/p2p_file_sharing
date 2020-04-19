@@ -16,7 +16,10 @@ from utils import send_msg
 config = {}
 config_file = ""
 total_files_list = []
-# requested_file = ""
+searched_files_list = []
+
+searched_file = ""
+requested_file = "hello.txt"
 shared_dir = "/home/daneker/PycharmProjects/p2p/src"
 
 shared_files_list = [
@@ -27,15 +30,38 @@ shared_files_list = [
 
 def retrieve_gui_data(gui_data):
     global shared_files_list
-    if not gui_data:
+    while not gui_data:
         time.sleep(5)
-    else:
-        for data in gui_data:
-            file_data = "<{}, {}, {}, {}, {}>".format(data[0], data[1], data[2], data[3], data[4])
-            shared_files_list.append(file_data)
+
+    for data in gui_data:
+        file_data = "<{}, {}, {}, {}, {}>".format(data[0], data[1], data[2], data[3], data[4])
+        shared_files_list.append(file_data)
 
 
-def create_conn(addr):
+def search_gui_filename(file):
+    global searched_file
+    while not file:
+        time.sleep(2)
+        if file:
+            break
+    searched_file = file
+
+    while not searched_files_list:
+        time.sleep(2)
+    return searched_files_list
+
+
+def get_qui_requested_file(file):
+    global requested_file
+    while not file:
+        time.sleep(2)
+        if file:
+            break
+    requested_file = file
+    # TODO maybe send downloaded file to gui
+
+
+def init_conn(addr):
     host, port = addr
     try:
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,7 +81,9 @@ def create_conn(addr):
 def communicate(server, buffer, prev_cmd):
     global config
     global total_files_list
-    # global requested_file
+    global requested_file
+    global searched_file
+    global searched_files_list
 
     if "\0" not in buffer:
         msg = server.recv(4096).decode("utf-8")
@@ -75,7 +103,9 @@ def communicate(server, buffer, prev_cmd):
 
     if cmd == "HI":
         # TODO shared file list to be done via GUI
-        
+        while not shared_files_list:
+            time.sleep(5)
+
         for file in shared_files_list:
             list_msg += file + "\n"
         list_msg += "\0"
@@ -85,16 +115,20 @@ def communicate(server, buffer, prev_cmd):
     if cmd == "ACCEPTED" or cmd == "NOT FOUND":
         msg = "SEARCH: "
         # TODO need to be handled via GUI
-        requested_file = "hello"
-        msg += requested_file + "\n\0"
+        msg += searched_file + "\n\0"
         send_msg(server, msg)
         return communicate(server, buffer, "SEARCH")
 
     if cmd == "FOUND:":
         print("received ", cmd)
 
+        for line in lines[1:]:
+            searched_files_list.append(line)
+
         # TODO requested file to be chosen from GUI
-        requested_file = "FileName, type, size"
+        while not requested_file:
+            time.sleep(2)
+
         lmsg = "DOWNLOAD: " + requested_file + "\n\0"
 
         # TODO connect to peer
@@ -193,7 +227,7 @@ def main():
         config['port'] = 45000
         # TODO json_save(config_file, config)
 
-    server = create_conn((config['host'], config['port']))
+    server = init_conn((config['host'], config['port']))
 
     buffer = ""
 

@@ -49,7 +49,6 @@ def communicate(conn, client, buffer, prev_cmd):
         clients[conn_clients[client]]['files'] = lines[1:]
 
         save_files_dict(all_files, lines[1:])
-        print(all_files)
 
         # TODO json_save(clients_file, clients)
 
