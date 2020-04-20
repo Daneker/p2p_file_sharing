@@ -91,6 +91,9 @@ def serve(conn, addr):
             buffer += msg
 
         buffer, prev_cmd = communicate(conn, addr, buffer, prev_cmd)
+        # if prev_cmd == "FOUND" or prev_cmd == "NOT FOUND":
+        #     print("here at the end of serve")
+        #     break
 
 
 def main():

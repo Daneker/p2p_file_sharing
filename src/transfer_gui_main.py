@@ -1,9 +1,7 @@
 from tkinter import *
 import tkinter as tk
-import os 
-import file_xfer_gui
+import os
 import time
-from client import retrieve 
 
 class ParentWindow(Frame):
     def __init__(self, master, *args, **kwargs):
