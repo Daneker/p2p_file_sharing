@@ -1,21 +1,21 @@
 from tkinter import *
 import tkinter as tk
-import os
+import os 
 import time
-from client import retrieve_gui_data, search_gui_filename, get_qui_requested_file
+from client import retrieve_gui_data, search_gui_filename,get_gui_requested_file
 
 class ParentWindow(Frame):
     def __init__(self, master, *args, **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
-
+        
         self.master = master
         self.master.minsize(500, 230)
         self.master.title("P2P File Transfer")
         self.database = []
-        self.server_files = None
+        self.server_files = [["AXA AXA AXA AXA AXA AXA"] for  i in range(20)]
         self.files = 0
         
-
+    
     def start(self):
         greeting = tk.Label(text="Please provide at least one file to server.\n\r")
         greeting.pack()
@@ -32,6 +32,7 @@ class ParentWindow(Frame):
             file_path = text_source.get()
             if os.path.isfile(file_path):
                 add_button['state'] = 'disabled'
+                add_button.pack_forget()
                 self.files += 1
                 self.get_info_about_file(file_path)
                 return 
@@ -51,27 +52,29 @@ class ParentWindow(Frame):
         modified = os.path.getmtime(file_path)
         year,month,day,hour,minute,second=time.localtime(modified)[:-3]
         date = "%02d/%02d/%d"%(day,month,year)
-
+        
         self.database.append([name,path,ext,size,date])
         self.loop()
 
-
+        
     def loop(self):
         if self.files < 5:
             want_more = tk.Label(text = "Do you want to add another file?")
             want_more.pack()
 
             def yes_func():
-                yes['state'] = 'disabled'
-                no['state'] = 'disabled'
+                want_more.pack_forget()
+                yes.pack_forget()
+                no.pack_forget()
                 self.add_file()
-
+            
             def no_func():
-                yes['state'] = 'disabled'
-                no['state'] = 'disabled'
+                want_more.pack_forget()
+                yes.pack_forget()
+                no.pack_forget()
                 self.send()
 
-
+            
             yes = tk.Button(text = "Yes", width = 3, height = 1, bg = "white",fg = "black", command = yes_func)
             yes.pack()
             no = tk.Button(text = "No", width = 3, height = 1, bg = "white",fg = "black", command = no_func)
@@ -80,16 +83,16 @@ class ParentWindow(Frame):
         else:
             self.send()
 
-
+    
     def send(self):
         retrieve_gui_data(self.database)
         self.search()
-
-
+    
+    
     def pass_search_output(self, files):
         self.server_files = files
-
-
+    
+    
     def search(self):
         custom_source = StringVar()
         custom_source.set('Which file do you want to download? Provide just a name.')
@@ -102,7 +105,7 @@ class ParentWindow(Frame):
 
             while self.server_files == None:
                 time.sleep(5)
-
+            
             if len(self.server_files) == 0:
                 self.server_files = None
                 text_source.delete(0, tk.END)
@@ -110,7 +113,7 @@ class ParentWindow(Frame):
             else:
                 search_button['state'] = 'disabled'
                 self.download_file()
-                return
+                return            
 
         search_button = tk.Button(text = "Search", width = 5, height = 1, bg = "white",fg = "black", command = check)
         search_button.pack()
@@ -127,7 +130,7 @@ class ParentWindow(Frame):
         for i in range(len(self.server_files)):
             mylist.insert(END, self.server_files[i])
 
-
+    
         scrollbar.config( command = mylist.yview )
         mylist.pack( fill = BOTH )
 
@@ -135,7 +138,7 @@ class ParentWindow(Frame):
             download_button['state'] = 'disabled'
             selected = list(mylist.get(mylist.curselection()))
             print(selected)
-            get_qui_requested_file(selected)
+            get_gui_requested_file(selected)
             self.master.quit()
         download_button = tk.Button(text = "Download", width = 5, height = 1, bg = "white",fg = "black", command = download )
         download_button.pack()
