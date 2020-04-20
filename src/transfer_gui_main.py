@@ -2,7 +2,7 @@ from tkinter import *
 import tkinter as tk
 import os 
 import time
-from client import retrieve_gui_data, search_gui_filename, get_qui_requested_file
+from client import retrieve_gui_data, search_gui_filename,get_gui_requested_file
 
 class ParentWindow(Frame):
     def __init__(self, master, *args, **kwargs):
@@ -12,7 +12,7 @@ class ParentWindow(Frame):
         self.master.minsize(500, 230)
         self.master.title("P2P File Transfer")
         self.database = []
-        self.server_files = None
+        self.server_files = [["AXA AXA AXA AXA AXA AXA"] for  i in range(20)]
         self.files = 0
         
     
@@ -32,6 +32,7 @@ class ParentWindow(Frame):
             file_path = text_source.get()
             if os.path.isfile(file_path):
                 add_button['state'] = 'disabled'
+                add_button.pack_forget()
                 self.files += 1
                 self.get_info_about_file(file_path)
                 return 
@@ -62,13 +63,15 @@ class ParentWindow(Frame):
             want_more.pack()
 
             def yes_func():
-                yes['state'] = 'disabled'
-                no['state'] = 'disabled'
+                want_more.pack_forget()
+                yes.pack_forget()
+                no.pack_forget()
                 self.add_file()
             
             def no_func():
-                yes['state'] = 'disabled'
-                no['state'] = 'disabled'
+                want_more.pack_forget()
+                yes.pack_forget()
+                no.pack_forget()
                 self.send()
 
             
@@ -135,7 +138,7 @@ class ParentWindow(Frame):
             download_button['state'] = 'disabled'
             selected = list(mylist.get(mylist.curselection()))
             print(selected)
-            get_qui_requested_file(selected)
+            get_gui_requested_file(selected)
             self.master.quit()
         download_button = tk.Button(text = "Download", width = 5, height = 1, bg = "white",fg = "black", command = download )
         download_button.pack()
