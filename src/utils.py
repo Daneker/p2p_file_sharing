@@ -1,20 +1,20 @@
 from __future__ import print_function
+import json
 import socket
 import sys
 
 
 def construct_file_str(file):
-    file_str = "<{}, {}, {}, {}, {}, {}>".format(file['path'],
+    file_str = "<{}, {}, {}, {}, {}>".format(file['path'],
                                                  file['type'],
                                                  file['size'],
                                                  file['last_modified'],
-                                                 file['ip'],
-                                                 file['port'])
+                                                 file['client'])
     return file_str
 
 
 # <filename, file path, file type, file size, file last modified date (DD/MM/YY), IP address, port number>
-def save_files_dict(all_files, files_str):
+def save_files_dict(all_files, files_str, client_name, clients):
     for file in files_str:
         data = file.split(", ")
         name = data[0][1:]
@@ -25,10 +25,9 @@ def save_files_dict(all_files, files_str):
             'type': data[2],
             'size': data[3],
             'last_modified': data[4],
-            'ip': data[5],
-            'port': data[6]
+            'client': client_name
         })
-
+        json_save("files.json", all_files)
 
 def send_msg(conn, msg):
     try:
@@ -39,8 +38,14 @@ def send_msg(conn, msg):
         sys.exit(-1)
 
 
-def save_json():
-    pass
+def json_save(file, data):
+    with open(file, 'w') as f:
+        json.dump(data, f)
+
+def json_load(file):
+    with open(file, "rb") as f:
+        json_ = json.load(f)
+    return json_
 
 
 if __name__ == '__main__':

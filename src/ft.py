@@ -1,20 +1,18 @@
 from __future__ import print_function
 import os
-import json
 import socket
 import sys
 from threading import Thread
 
-from utils import send_msg, save_files_dict, construct_file_str
+from utils import send_msg, save_files_dict, construct_file_str, json_save, json_load
 
 config = {}
-config_file = ""
-clients_file = ""
-clients = {'u1': {'files': []}}
+config_file = "config.json"
+clients_file = "clients.json"
+clients = {}
 conn_clients = {}
 
-# <filename, file path, file type, file size, file last modified date (DD/MM/YY), IP address, port number>
-# filename: <file path, file type, file size, file last modified date (DD/MM/YY), IP address, port number>
+# gui_all files = [[name,path,ext,size,date]]
 all_files = {}
 
 
@@ -36,24 +34,24 @@ def communicate(conn, client, buffer, prev_cmd):
     cmd = fields[0]
     if cmd == "HELLO":
         config['uoffset'] += 1
-        # TODO json_save(config_file, config)
+        json_save(config_file, config)
 
         conn_clients[client] = "u"+str(config['uoffset'])
 
-        send_msg(conn, "HI\n\0")
-        print("I have sent msg HI")
+        send_msg(conn, "HI {}\n\0".format(conn_clients[client]))
         return communicate(conn, client, buffer, "HI")
     elif cmd == "LIST":
         if conn_clients[client] not in clients:
             clients[conn_clients[client]] = {}
+
         clients[conn_clients[client]]['files'] = lines[1:]
+        clients[conn_clients[client]]['host'] = client[0]
+        clients[conn_clients[client]]['port'] = client[1]
 
-        save_files_dict(all_files, lines[1:])
-
-        # TODO json_save(clients_file, clients)
+        save_files_dict(all_files, lines[1:], conn_clients[client], clients)
+        json_save(clients_file, clients)
 
         send_msg(conn, "ACCEPTED\n\0")
-        print("I have sent msg ACCEPTED")
         return buffer, "ACCEPTED"
 
     elif cmd == "SEARCH:":
@@ -69,7 +67,6 @@ def communicate(conn, client, buffer, prev_cmd):
             prev_cmd = "NOT FOUND"
 
         send_msg(conn, msg)
-        print("I have sent msg FOUND|NOT FOUND.")
         return buffer, prev_cmd
 
     else:
@@ -103,15 +100,12 @@ def main():
     config_file = "config.json"
 
     if os.path.isfile(config_file):
-        with open(config_file, "rb") as file:
-            config = json.load(file)
+        config = json_load(config_file)
     else:
         config['host'] = 'localhost'
         config['port'] = 45000
         config['uoffset'] = 0
-        # TODO json_save(config_file, config)
-
-    # TODO json_save(clients_file, clients)
+        json_save(config_file, config)
 
     # creating socket for connection
     try:

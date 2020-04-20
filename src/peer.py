@@ -105,30 +105,3 @@ def listen(lhost, lport, queue):
         pcount += 1
 
 
-# def retrieve_gui_data(gui_data):
-#     global shared_files_list
-#     while not gui_data:
-#         time.sleep(5)
-#
-#     for data in gui_data:
-#         file_data = "<{}, {}, {}, {}, {}>".format(data[0], data[1], data[2], data[3], data[4])
-#         shared_files_list.append(file_data)
-#
-#
-# def search_gui_filename(file):
-#     global searched_file
-#     while not file:
-#         time.sleep(2)
-#         if file:
-#             break
-#     searched_file = file
-#
-#
-# def get_qui_requested_file(file):
-#     global requested_file
-#     while not file:
-#         time.sleep(2)
-#         if file:
-#             break
-#     requested_file = file
-#     # TODO maybe send downloaded file to gui
