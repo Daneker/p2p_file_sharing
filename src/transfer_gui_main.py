@@ -2,7 +2,7 @@ from tkinter import *
 import tkinter as tk
 import os 
 import time
-from client import retrieve_gui_data, search_gui_filename,get_qui_requested_file
+from client import retrieve_gui_data, search_gui_filename, get_qui_requested_file
 
 class ParentWindow(Frame):
     def __init__(self, master, *args, **kwargs):
