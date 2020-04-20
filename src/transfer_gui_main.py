@@ -13,6 +13,7 @@ class ParentWindow(Frame):
         self.master.title("P2P File Transfer")
         self.database = []
         self.server_files = None#[["file.txt"]]*100
+
         self.files = 0
         
     
