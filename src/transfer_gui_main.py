@@ -12,7 +12,7 @@ class ParentWindow(Frame):
         self.master.minsize(500, 230)
         self.master.title("P2P File Transfer")
         self.database = []
-        self.server_files = [["AXA AXA AXA AXA AXA AXA"] for  i in range(20)]
+        self.server_files = None
         self.files = 0
         
     
@@ -62,16 +62,15 @@ class ParentWindow(Frame):
             want_more = tk.Label(text = "Do you want to add another file?")
             want_more.pack()
 
-            def yes_func():
+            def forget():
                 want_more.pack_forget()
                 yes.pack_forget()
                 no.pack_forget()
+
+            def yes_func():
                 self.add_file()
             
             def no_func():
-                want_more.pack_forget()
-                yes.pack_forget()
-                no.pack_forget()
                 self.send()
 
             
@@ -85,6 +84,7 @@ class ParentWindow(Frame):
 
     
     def send(self):
+        ##########################################################3
         retrieve_gui_data(self.database)
         self.search()
     
@@ -101,6 +101,7 @@ class ParentWindow(Frame):
 
         def check():
             selected_file = text_source.get()
+            ##########################################################3
             search_gui_filename(selected_file)
 
             while self.server_files == None:
@@ -137,7 +138,7 @@ class ParentWindow(Frame):
         def download():
             download_button['state'] = 'disabled'
             selected = list(mylist.get(mylist.curselection()))
-            print(selected)
+            ##########################################################3
             get_gui_requested_file(selected)
             self.master.quit()
         download_button = tk.Button(text = "Download", width = 5, height = 1, bg = "white",fg = "black", command = download )
