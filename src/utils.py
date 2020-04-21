@@ -13,6 +13,17 @@ def construct_file_str(file):
     return file_str
 
 
+def construct_file_str_2(file_list):
+    file_str_list = []
+    for file in file_list:
+        file_str = "<{}, {}, {}, {}, {}>".format(file['path'],
+                                                 file['type'],
+                                                 file['size'],
+                                                 file['last_modified'],
+                                                 file['client'])
+        file_str_list.append(file_str)
+    return file_str_list
+
 # <filename, file path, file type, file size, file last modified date (DD/MM/YY), IP address, port number>
 def save_files_dict(all_files, files_str, client_name, clients):
     for file in files_str:
@@ -28,6 +39,7 @@ def save_files_dict(all_files, files_str, client_name, clients):
             'client': client_name
         })
         json_save("files.json", all_files)
+
 
 def send_msg(conn, msg):
     try:

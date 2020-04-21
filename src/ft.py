@@ -63,8 +63,8 @@ def communicate(conn, client, buffer, prev_cmd):
                 msg += construct_file_str(file) + "\n"
             msg += "\0"
         else:
-            msg = "NOT FOUND\n\0"
-            prev_cmd = "NOT FOUND"
+            msg = "NOT_FOUND\n\0"
+            prev_cmd = "NOT_FOUND"
 
         send_msg(conn, msg)
         return buffer, prev_cmd
@@ -88,10 +88,6 @@ def serve(conn, addr):
             buffer += msg
 
         buffer, prev_cmd = communicate(conn, addr, buffer, prev_cmd)
-        # if prev_cmd == "FOUND" or prev_cmd == "NOT FOUND":
-        #     print("here at the end of serve")
-        #     break
-
 
 def main():
     global config

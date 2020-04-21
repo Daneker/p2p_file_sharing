@@ -2,7 +2,8 @@ from tkinter import *
 import tkinter as tk
 import os 
 import time
-from client import retrieve_gui_data, search_gui_filename,get_gui_requested_file
+from client import retrieve_gui_data, search_gui_filename, get_gui_requested_file, main
+from utils import json_load, construct_file_str_2
 
 class ParentWindow(Frame):
     def __init__(self, master, *args, **kwargs):
@@ -12,7 +13,7 @@ class ParentWindow(Frame):
         self.master.minsize(500, 230)
         self.master.title("P2P File Transfer")
         self.database = []
-        self.server_files = [["AXA AXA AXA AXA AXA AXA"] for  i in range(20)]
+        self.server_files = None
         self.files = 0
         
     
@@ -104,8 +105,9 @@ class ParentWindow(Frame):
             search_gui_filename(selected_file)
 
             while self.server_files == None:
+                self.server_files = construct_file_str_2(json_load("files.json")[selected_file])
                 time.sleep(5)
-            
+
             if len(self.server_files) == 0:
                 self.server_files = None
                 text_source.delete(0, tk.END)
@@ -136,7 +138,7 @@ class ParentWindow(Frame):
 
         def download():
             download_button['state'] = 'disabled'
-            selected = list(mylist.get(mylist.curselection()))
+            selected = mylist.get(mylist.curselection())
             print(selected)
             get_gui_requested_file(selected)
             self.master.quit()
@@ -150,3 +152,4 @@ if __name__ == "__main__":
     App = ParentWindow(root)
     App.start()
     root.mainloop()
+    main
