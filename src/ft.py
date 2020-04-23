@@ -4,7 +4,7 @@ import socket
 import sys
 from threading import Thread
 
-from utils import send_msg, save_files_dict, construct_file_str, json_save, json_load
+from utils import send_msg, save_files_dict, construct_file_str_1, json_save, json_load
 
 config = {}
 config_file = "config.json"
@@ -12,7 +12,6 @@ clients_file = "clients.json"
 clients = {}
 conn_clients = {}
 
-# gui_all files = [[name,path,ext,size,date]]
 all_files = {}
 
 
@@ -36,7 +35,13 @@ def communicate(conn, client, buffer, prev_cmd):
         config['uoffset'] += 1
         json_save(config_file, config)
 
-        conn_clients[client] = "u"+str(config['uoffset'])
+        conn_clients[client] = "u" + str(config['uoffset'])
+        if conn_clients[client] not in clients:
+            clients[conn_clients[client]] = {}
+
+        clients[conn_clients[client]]['host'] = fields[1]
+        clients[conn_clients[client]]['port'] = fields[2]
+        # json_save(clients_file, clients)
 
         send_msg(conn, "HI {}\n\0".format(conn_clients[client]))
         return communicate(conn, client, buffer, "HI")
@@ -45,10 +50,10 @@ def communicate(conn, client, buffer, prev_cmd):
             clients[conn_clients[client]] = {}
 
         clients[conn_clients[client]]['files'] = lines[1:]
-        clients[conn_clients[client]]['host'] = client[0]
-        clients[conn_clients[client]]['port'] = client[1]
 
-        save_files_dict(all_files, lines[1:], conn_clients[client], clients)
+        save_files_dict(all_files, lines[1:])
+        print("ALL FILES")
+        print(all_files)
         json_save(clients_file, clients)
 
         send_msg(conn, "ACCEPTED\n\0")
@@ -57,13 +62,14 @@ def communicate(conn, client, buffer, prev_cmd):
     elif cmd == "SEARCH:":
         filename = fields[1]
         if filename in all_files:
+
             msg = "FOUND: \n"
             prev_cmd = "FOUND"
             for file in all_files[filename]:
-                msg += construct_file_str(file) + "\n"
+                msg += construct_file_str_1(file) + "\n"
             msg += "\0"
         else:
-            msg = "NOT_FOUND\n\0"
+            msg = "NOT_FOUNDD\n\0"
             prev_cmd = "NOT_FOUND"
 
         send_msg(conn, msg)
@@ -121,7 +127,7 @@ def main():
         sys.exit(-1)
 
     # listen for connections
-    ssock.listen(3)
+    ssock.listen(5)
 
     ccount = 0
     while True:
