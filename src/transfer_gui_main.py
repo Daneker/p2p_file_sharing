@@ -13,8 +13,9 @@ class ParentWindow(Frame):
         self.master.title("P2P File Transfer")
         self.database = []
         self.server_files = None#[["file.txt"]]*100
-
+        self.send = False
         self.files = 0
+        self.selected_file = None
         
     
     def start(self):
@@ -88,17 +89,25 @@ class ParentWindow(Frame):
         else:
             self.send()
 
+    def retrieve_gui_data(self):
+        if self.send == False:
+            return None
+        else:
+            return self.database
+    
     
     def send(self):
         ##########################################################3
-        retrieve_gui_data(self.database)
+        self.send = True
         self.search()
     
     
     def pass_search_output(self, files):
         self.server_files = files
     
-    
+    def search_gui_filename(self):
+        return self.selected_file 
+
     def search(self):
         custom_source = StringVar()
         custom_source.set('Which file do you want to download? Provide just a name.')
@@ -106,12 +115,11 @@ class ParentWindow(Frame):
         text_source.pack()
 
         def check():
-            selected_file = text_source.get()
+            self.selected_file = text_source.get()
             ##########################################################3
-            search_gui_filename(selected_file)
 
             while self.server_files == None:
-                time.sleep(5)
+                time.sleep(3)
             
             if len(self.server_files) == 0:
                 self.server_files = None
