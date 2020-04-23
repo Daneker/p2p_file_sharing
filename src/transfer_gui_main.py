@@ -12,7 +12,8 @@ class ParentWindow(Frame):
         self.master.minsize(500, 230)
         self.master.title("P2P File Transfer")
         self.database = []
-        self.server_files = [["AXA AXA AXA AXA AXA AXA"] for  i in range(20)]
+        self.server_files = None#[["file.txt"]]*100
+
         self.files = 0
         
     
@@ -24,8 +25,8 @@ class ParentWindow(Frame):
 
     def add_file(self):
         custom_source = StringVar()
-        custom_source.set('Provide a path to the file please.')
-        text_source = tk.Entry(self.master, width=60, textvariable=custom_source)
+        custom_source.set('Provide a path to the file in folder \'SharedP2P\' please. Example: ./SharedP2P/filename ')
+        text_source = tk.Entry(self.master, width=90, textvariable=custom_source)
         text_source.pack()
 
         def check():
@@ -46,13 +47,16 @@ class ParentWindow(Frame):
 
 
     def get_info_about_file(self, file_path):
-        path = os.path.abspath(os.getcwd())
-        name, ext  = os.path.splitext(file_path[2:])
+        repo, name = file_path.split("/")[1:]
+        name, ext  = os.path.splitext(name)
+        path = os.path.abspath(os.getcwd()) + "/" + repo
+        #name, ext  = os.path.splitext(file_path[2:])
         size = os.path.getsize(file_path)
         modified = os.path.getmtime(file_path)
         year,month,day,hour,minute,second=time.localtime(modified)[:-3]
         date = "%02d/%02d/%d"%(day,month,year)
-        
+        print(path + "\n" + name + "\n" + ext)
+
         self.database.append([name,path,ext,size,date])
         self.loop()
 
@@ -62,16 +66,17 @@ class ParentWindow(Frame):
             want_more = tk.Label(text = "Do you want to add another file?")
             want_more.pack()
 
-            def yes_func():
+            def forget():
                 want_more.pack_forget()
                 yes.pack_forget()
                 no.pack_forget()
+
+            def yes_func():
+                forget()
                 self.add_file()
             
             def no_func():
-                want_more.pack_forget()
-                yes.pack_forget()
-                no.pack_forget()
+                forget()
                 self.send()
 
             
@@ -85,6 +90,7 @@ class ParentWindow(Frame):
 
     
     def send(self):
+        ##########################################################3
         retrieve_gui_data(self.database)
         self.search()
     
@@ -101,6 +107,7 @@ class ParentWindow(Frame):
 
         def check():
             selected_file = text_source.get()
+            ##########################################################3
             search_gui_filename(selected_file)
 
             while self.server_files == None:
@@ -137,7 +144,7 @@ class ParentWindow(Frame):
         def download():
             download_button['state'] = 'disabled'
             selected = list(mylist.get(mylist.curselection()))
-            print(selected)
+            ##########################################################3
             get_gui_requested_file(selected)
             self.master.quit()
         download_button = tk.Button(text = "Download", width = 5, height = 1, bg = "white",fg = "black", command = download )
