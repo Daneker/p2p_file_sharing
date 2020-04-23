@@ -21,7 +21,7 @@ clients = {}
 client_file = "clients.json"
 
 searched_files_list = []
-shared_files_list = ["</home/daneker/PycharmProjects/p2p/src, json, 52, 21/04/2020, u164>"]
+shared_files_list = []
 
 searched_file = "config"
 #"</home/daneker/PycharmProjects/p2p/src, json, 52, 21/04/2020, u164>"
@@ -67,7 +67,6 @@ def init_conn(addr):
 
 def communicate(server, buffer, prev_cmd):
     global config
-    global requested_file
     global searched_file
     global searched_files_list
     global client_name
@@ -88,9 +87,10 @@ def communicate(server, buffer, prev_cmd):
 
     if cmd == "HI":
         list_msg = "LIST \n"
-        while not shared_files_list:
-            time.sleep(5)
 
+        # TODO get shared files(5) from GUI -> shared_files_list
+        ########################################################################
+        # тут было while not shared_files_list bla bla
         client_name = fields[1]
         for file in shared_files_list:
             file += client_name + ">";
@@ -102,9 +102,9 @@ def communicate(server, buffer, prev_cmd):
     if cmd == "ACCEPTED" or cmd == "NOT_FOUND":
         msg = "SEARCH: "
 
-        while not shared_files_list:
-            time.sleep(5)
-
+        # TODO get searched file name from GUI -> searched_file
+        #########################################################
+        # тут было while not searched_file bla bla
         msg += searched_file + "\n\0"
         send_msg(server, msg)
         return communicate(server, buffer, prev_cmd)
@@ -124,6 +124,9 @@ def communicate(server, buffer, prev_cmd):
 def give_peer(peer):
     global requested_file
 
+    # TODO call from GUI to get selected_file -> requested_file
+    ########################################################################
+    # тут было while not requested_file bla bla
     send_msg(peer, "DOWNLOAD: {}\n\0".format(requested_file))
     buffer = ""
 
@@ -141,12 +144,11 @@ def give_peer(peer):
 
         file_data = fields[1].encode()
         req_file_data = requested_file.split(", ")
-        downloaded_file_path = "/home/daneker/PycharmProjects/p2p/downloaded_files"
+        downloaded_file_path = "/home/daneker/PycharmProjects/p2p/SharedP2P"
         req_file_type = req_file_data[1]
 
         file_ = downloaded_file_path + "/" + searched_file + "." + req_file_type
 
-        # TODO get from GUI
         file_to_save = open(file_, "wb")
         file_to_save.write(file_data)
         file_to_save.close()
