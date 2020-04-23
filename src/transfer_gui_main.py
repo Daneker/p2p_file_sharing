@@ -25,8 +25,8 @@ class ParentWindow(Frame):
 
     def add_file(self):
         custom_source = StringVar()
-        custom_source.set('Provide a path to the file please.')
-        text_source = tk.Entry(self.master, width=60, textvariable=custom_source)
+        custom_source.set('Provide a path to the file in folder \'SharedP2P\' please. Example: ./SharedP2P/filename ')
+        text_source = tk.Entry(self.master, width=90, textvariable=custom_source)
         text_source.pack()
 
         def check():
@@ -47,13 +47,16 @@ class ParentWindow(Frame):
 
 
     def get_info_about_file(self, file_path):
-        path = os.path.abspath(os.getcwd())
-        name, ext  = os.path.splitext(file_path[2:])
+        repo, name = file_path.split("/")[1:]
+        name, ext  = os.path.splitext(name)
+        path = os.path.abspath(os.getcwd()) + "/" + repo
+        #name, ext  = os.path.splitext(file_path[2:])
         size = os.path.getsize(file_path)
         modified = os.path.getmtime(file_path)
         year,month,day,hour,minute,second=time.localtime(modified)[:-3]
         date = "%02d/%02d/%d"%(day,month,year)
-        
+        print(path + "\n" + name + "\n" + ext)
+
         self.database.append([name,path,ext,size,date])
         self.loop()
 
