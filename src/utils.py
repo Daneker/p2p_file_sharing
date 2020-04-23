@@ -4,8 +4,18 @@ import socket
 import sys
 
 
-def construct_file_str(file):
-    file_str = "<{}, {}, {}, {}, {}>".format(file['path'],
+# [name, path, ext, size, date, client]
+def construct_file_str(file, client):
+    file_str = "<{}, {}, {}, {}, {}, {}>".format(file[0],
+                                                 file[1],
+                                                 file[2],
+                                                 file[3],
+                                                 file[4],
+                                                 client)
+    return file_str
+
+def construct_file_str_1(file):
+    file_str = "<{}, {}, {}, {}, {}".format(file['path'],
                                                  file['type'],
                                                  file['size'],
                                                  file['last_modified'],
@@ -13,19 +23,8 @@ def construct_file_str(file):
     return file_str
 
 
-def construct_file_str_2(file_list):
-    file_str_list = []
-    for file in file_list:
-        file_str = "<{}, {}, {}, {}, {}>".format(file['path'],
-                                                 file['type'],
-                                                 file['size'],
-                                                 file['last_modified'],
-                                                 file['client'])
-        file_str_list.append(file_str)
-    return file_str_list
-
-# <filename, file path, file type, file size, file last modified date (DD/MM/YY), IP address, port number>
-def save_files_dict(all_files, files_str, client_name, clients):
+# <filename, file path, file type, file size, file last modified date (DD/MM/YY), client_name>
+def save_files_dict(all_files, files_str):
     for file in files_str:
         data = file.split(", ")
         name = data[0][1:]
@@ -36,7 +35,7 @@ def save_files_dict(all_files, files_str, client_name, clients):
             'type': data[2],
             'size': data[3],
             'last_modified': data[4],
-            'client': client_name
+            'client': data[5]
         })
         json_save("files.json", all_files)
 
