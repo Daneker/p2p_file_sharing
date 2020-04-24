@@ -221,6 +221,7 @@ class ParentWindow(Frame):
         
         
         def exitt():
+            send_msg(self.server, "BYE\n\0")
             self.master.quit() 
         
         search_button = tk.Button(text="Search", width=5, height=1, bg="white", fg="black", command=check)
