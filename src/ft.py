@@ -63,11 +63,11 @@ def communicate(conn, client, buffer, prev_cmd):
     elif cmd == "SEARCH:":
         filename = fields[1]
         if filename in all_files:
-
             msg = "FOUND: \n"
             prev_cmd = "FOUND"
             for file in all_files[filename]:
-                msg += construct_file_str_1(file) + "\n"
+                if clients[file['client']]['is_connected']:
+                    msg += construct_file_str_1(file) + "\n"
             msg += "\0"
         else:
             msg = "NOT_FOUNDD\n\0"
