@@ -37,8 +37,10 @@ def give_peer(peer, searched_file, requested_file):
         requested_file_str += rf + ","
 
     # print("req_file")
-    # print(requested_file)
-    # print("req_file_str")
+    print(requested_file)
+    print("req_file_str")
+    
+    
     send_msg(peer, "DOWNLOAD: {} {}\n\0".format(searched_file, requested_file_str))
     print("sent msg DOWNLOAD")
     buffer = ""
@@ -108,6 +110,8 @@ def download_from_peer(conn, addr):
             print("SENT FILE TO DOOWNLOAD")
             msg = "FILE:\n"
             conn.send(msg.encode())
+            print("FIELDSSSSSSSSSSSSSSSSSS")
+            print(fields)
             searched_file = fields[1]
             requested_file = fields[2].split(",")
             print("REQUESTEED FILE")

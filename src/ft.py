@@ -116,7 +116,7 @@ def main():
         config = json_load(config_file)
     else:
         config['host'] = 'localhost'
-        config['port'] = 45001
+        config['port'] = 45000
         config['uoffset'] = 0
         json_save(config_file, config)
 

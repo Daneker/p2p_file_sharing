@@ -77,7 +77,7 @@ class ParentWindow(Frame):
                 config = json.load(file)
         else:
             config['host'] = 'localhost'
-            config['port'] = 45001
+            config['port'] = 45000
             json_save(config_file, config)
 
         # connect with server
@@ -204,6 +204,8 @@ class ParentWindow(Frame):
             fields = lines[0].split(" ")
             cmd = fields[0]
 
+            exit_button.pack_forget()
+
             if cmd == "FOUND:":
                 for line in lines[1:]:
                     self.server_files.append(line)
@@ -216,9 +218,16 @@ class ParentWindow(Frame):
                 search_button['state'] = 'disabled'
                 self.download_file()
                 return
-
+        
+        
+        def exitt():
+            self.master.quit() 
+        
         search_button = tk.Button(text="Search", width=5, height=1, bg="white", fg="black", command=check)
         search_button.pack()
+        exit_button = tk.Button(text="Exit", width=5, height=1, bg="white", fg="black", command=exitt)
+        exit_button.pack()
+            
 
     def download_file(self):
         print("GUI download file")
@@ -272,11 +281,13 @@ class ParentWindow(Frame):
             self.search()
             #download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
 
-            
+          
 
         download_button = tk.Button(text="Download", width=5, height=1, bg="white", fg="black", command=download)
         download_button.pack()
 
+    
+  
 
 if __name__ == "__main__":
     root = tk.Tk()
