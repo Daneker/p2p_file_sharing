@@ -268,7 +268,7 @@ class ParentWindow(Frame):
             mylist.pack_forget()
             download_button.pack_forget()
             scrollbar.pack_forget()
-            #self.server_files = []
+            self.server_files = []
             self.search()
             #download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
 
