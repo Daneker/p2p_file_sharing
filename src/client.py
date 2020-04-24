@@ -89,6 +89,10 @@ class ParentWindow(Frame):
         self.lsock = listen(queue)
         self.lhost, self.lport = queue.get()
 
+        lthread = Thread(name="lthread", target=accept_peer, args=(self.lsock,))
+        lthread.daemon = True
+        lthread.start()
+
         greeting = tk.Label(text="Please provide at least one file to server.\n\r")
         greeting.pack()
         self.add_file()
@@ -174,7 +178,14 @@ class ParentWindow(Frame):
             list_msg += "\0"
             send_msg(self.server, list_msg)
 
-        self.search()
+        print("my buffer: ", self.buffer)
+        lines = communicate(self.server, self.buffer)
+        fields = lines[0].split(" ")
+        cmd = fields[0]
+
+        print("received ", cmd)
+        if cmd == "ACCEPTED":
+            self.search()
 
     def search(self):
         custom_source = StringVar()
@@ -186,15 +197,8 @@ class ParentWindow(Frame):
             self.selected_file = text_source.get()
             ##########################################################3
 
-            print("my buffer: ", self.buffer)
-            lines = communicate(self.server, self.buffer)
-            fields = lines[0].split(" ")
-            cmd = fields[0]
-
-            print("received ", cmd)
-            if cmd == "ACCEPTED":
-                msg = "SEARCH: " + self.selected_file + "\n\0"
-                send_msg(self.server, msg)
+            msg = "SEARCH: " + self.selected_file + "\n\0"
+            send_msg(self.server, msg)
 
             lines = communicate(self.server, self.buffer)
             fields = lines[0].split(" ")
@@ -217,6 +221,7 @@ class ParentWindow(Frame):
         search_button.pack()
 
     def download_file(self):
+        print("GUI download file")
         select_file = tk.Label(text="Please, select the file you want to download.")
         select_file.pack()
 
@@ -231,16 +236,15 @@ class ParentWindow(Frame):
         mylist.pack(fill=BOTH)
 
         def download():
+            print("GUI download")
             download_button['state'] = 'disabled'
             #self.master.quit()
             selected = mylist.get(mylist.curselection())
             ##########################################################3
+
+
             requested_file = selected.split(", ")
             peer_client = requested_file[4][:-1]
-
-            lthread = Thread(name="lthread", target=accept_peer, args=(self.lsock, self.selected_file, requested_file))
-            lthread.daemon = True
-            lthread.start()
 
             print("PEER CLIENT: ", peer_client)
             client = json_load(client_file)[peer_client]
@@ -258,6 +262,7 @@ class ParentWindow(Frame):
                 give_peer(peer, self.selected_file, requested_file)
             else:
                 print("peer is not connected")
+
             
             select_file.pack_forget()
             mylist.pack_forget()

@@ -31,12 +31,19 @@ def communicate(server, buffer):
 
 
 def give_peer(peer, searched_file, requested_file):
-    send_msg(peer, "DOWNLOAD: {}\n\0".format(requested_file))
+    print("GIVE PEER .....")
+    requested_file_str = ""
+    for rf in requested_file:
+        requested_file_str += rf + ","
+
+    # print("req_file")
+    # print(requested_file)
+    # print("req_file_str")
+    send_msg(peer, "DOWNLOAD: {} {}\n\0".format(searched_file, requested_file_str))
     print("sent msg DOWNLOAD")
     buffer = ""
 
     while "\0" not in buffer:
-
         buffer += peer.recv(4096).decode("utf-8")
         print("received from buffer_1: ", buffer)
 
@@ -80,46 +87,49 @@ def give_peer(peer, searched_file, requested_file):
         return
 
 
-def download_from_peer(conn, addr, searched_file, requested_file):
+def download_from_peer(conn, addr):
     buffer = ""
 
     print("download_from_peer()")
 
-    # while True:
-    print("\n NOT WHILE\n")
-    while "\0" not in buffer:
-        print("received from peer_2: ", buffer)
-        buffer += conn.recv(4096).decode("utf-8")
+    while True:
+    # print("\n NOT WHILE\n")
+        while "\0" not in buffer:
+            # print("received from peer_2: ", buffer)
+            buffer += conn.recv(4096).decode("utf-8")
 
-    idx = buffer.index("\0")
-    msg = buffer[:idx-1]
-    buffer = buffer[idx+1:]
+        idx = buffer.index("\0")
+        msg = buffer[:idx-1]
+        buffer = buffer[idx+1:]
 
-    fields = msg.split()
-    cmd = fields[0]
+        fields = msg.split()
+        cmd = fields[0]
 
-    if cmd == "DOWNLOAD:":
-        print("SENT FILE TO DOOWNLOAD")
-        msg = "FILE:\n"
-        conn.send(msg.encode())
+        if cmd == "DOWNLOAD:":
+            print("SENT FILE TO DOOWNLOAD")
+            msg = "FILE:\n"
+            conn.send(msg.encode())
+            searched_file = fields[1]
+            requested_file = fields[2].split(",")
+            print("REQUESTEED FILE")
+            print(requested_file)
+            req_file_path = requested_file[0][1:]
+            req_file_type = requested_file[1]
 
-        req_file_path = requested_file[0][1:]
-        req_file_type = requested_file[1]
+            file_ = req_file_path + "/" + searched_file + req_file_type
+            file__ = open(file_, "rb")
 
-        file_ = req_file_path + "/" + searched_file + req_file_type
-        file__ = open(file_, "rb")
-
-        file_buffer = file__.read(1024)
-        while file_buffer:
-            conn.send(file_buffer)
             file_buffer = file__.read(1024)
+            while file_buffer:
+                conn.send(file_buffer)
+                file_buffer = file__.read(1024)
 
-        conn.send("\0".encode())
-        file__.close()
+            conn.send("\0".encode())
+            file__.close()
 
-    else:
-        print("undetermined error BLA BLA\n")
-    return
+        else:
+            print("undetermined error BLA BLA\n")
+        return
 
 
 def listen(queue):
@@ -137,11 +147,11 @@ def listen(queue):
     return lsock
 
 
-def accept_peer(lsock, selected, requested_file):
+def accept_peer(lsock):
     pcount = 0
     while True:
         conn, addr = lsock.accept()
-        pthread = Thread(name="p" + str(pcount), target=download_from_peer, args=(conn, addr, selected, requested_file))
+        pthread = Thread(name="p" + str(pcount), target=download_from_peer, args=(conn, addr))
 
         pthread.daemon = True
         pthread.start()
