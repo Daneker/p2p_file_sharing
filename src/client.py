@@ -204,7 +204,7 @@ class ParentWindow(Frame):
             fields = lines[0].split(" ")
             cmd = fields[0]
 
-            exit_button.pack_forget()
+            
 
             if cmd == "FOUND:":
                 for line in lines[1:]:
@@ -215,6 +215,7 @@ class ParentWindow(Frame):
                 text_source.delete(0, tk.END)
                 text_source.insert(0, "This file does not exist. Provide another.")
             else:
+                exit_button.pack_forget()
                 search_button['state'] = 'disabled'
                 self.download_file()
                 return
