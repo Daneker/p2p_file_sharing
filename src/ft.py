@@ -41,6 +41,7 @@ def communicate(conn, client, buffer, prev_cmd):
 
         clients[conn_clients[client]]['host'] = fields[1]
         clients[conn_clients[client]]['port'] = fields[2]
+        clients[conn_clients[client]]['is_connected'] = 1
         # json_save(clients_file, clients)
 
         send_msg(conn, "HI {}\n\0".format(conn_clients[client]))
@@ -75,10 +76,18 @@ def communicate(conn, client, buffer, prev_cmd):
         send_msg(conn, msg)
         return buffer, prev_cmd
 
+    elif cmd == "BYE":
+        print("should update connected clients\n")
+        clients[conn_clients[client]]['is_connected'] = 0
+        json_save(clients_file, clients)
+        send_msg(conn, "BYE\n\0")
+        return buffer, prev_cmd
+
     else:
         print("invalid command was received\n")
         send_msg(conn, "ERROR\n\0")
         sys.exit(-1)
+
 
 
 def serve(conn, addr):

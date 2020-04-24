@@ -38,7 +38,7 @@ def give_peer(peer, searched_file, requested_file):
     while "\0" not in buffer:
 
         buffer += peer.recv(4096).decode("utf-8")
-        print("received: ", buffer)
+        print("received from buffer_1: ", buffer)
 
     idx = buffer.index("\0")
     msg = buffer[:idx]
@@ -49,7 +49,6 @@ def give_peer(peer, searched_file, requested_file):
     if cmd == "FILE:":
         print("DOWNLOADED THE FILE")
 
-        # </home/daneker/PycharmProjects/p2p/src/SharedP2P, .txt, 3, 23/04/2020, u2>
         field_str = ""
         for field in fields[1:]:
             field_str += field + "\n"
@@ -86,40 +85,40 @@ def download_from_peer(conn, addr, searched_file, requested_file):
 
     print("download_from_peer()")
 
-    while True:
-        print("\nWHILE\n")
-        while "\0" not in buffer:
-            print("received: ", buffer)
-            buffer += conn.recv(4096).decode("utf-8")
+    # while True:
+    print("\n NOT WHILE\n")
+    while "\0" not in buffer:
+        print("received from peer_2: ", buffer)
+        buffer += conn.recv(4096).decode("utf-8")
 
-        idx = buffer.index("\0")
-        msg = buffer[:idx-1]
-        buffer = buffer[idx+1:]
+    idx = buffer.index("\0")
+    msg = buffer[:idx-1]
+    buffer = buffer[idx+1:]
 
-        fields = msg.split()
-        cmd = fields[0]
+    fields = msg.split()
+    cmd = fields[0]
 
-        if cmd == "DOWNLOAD:":
-            print("SENT FILE TO DOOWNLOAD")
-            msg = "FILE:\n"
-            conn.send(msg.encode())
+    if cmd == "DOWNLOAD:":
+        print("SENT FILE TO DOOWNLOAD")
+        msg = "FILE:\n"
+        conn.send(msg.encode())
 
-            req_file_path = requested_file[0][1:]
-            req_file_type = requested_file[1]
+        req_file_path = requested_file[0][1:]
+        req_file_type = requested_file[1]
 
-            file_ = req_file_path + "/" + searched_file + req_file_type
-            file__ = open(file_, "rb")
+        file_ = req_file_path + "/" + searched_file + req_file_type
+        file__ = open(file_, "rb")
 
+        file_buffer = file__.read(1024)
+        while file_buffer:
+            conn.send(file_buffer)
             file_buffer = file__.read(1024)
-            while file_buffer:
-                conn.send(file_buffer)
-                file_buffer = file__.read(1024)
 
-            conn.send("\0".encode())
-            file__.close()
+        conn.send("\0".encode())
+        file__.close()
 
-        else:
-            print("undetermined error BLA BLA\n")
+    else:
+        print("undetermined error BLA BLA\n")
     return
 
 

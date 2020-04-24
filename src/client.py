@@ -186,6 +186,7 @@ class ParentWindow(Frame):
             self.selected_file = text_source.get()
             ##########################################################3
 
+            print("my buffer: ", self.buffer)
             lines = communicate(self.server, self.buffer)
             fields = lines[0].split(" ")
             cmd = fields[0]
@@ -245,11 +246,16 @@ class ParentWindow(Frame):
 
             peer_host = client['host']
             peer_port = int(client['port'])
-            print("lhost: ", peer_host)
-            print("lport: ", peer_port)
+            peer_connected = int(client['is_connected'])
+            if peer_connected:
+                print("peer is connected")
+                print("lhost: ", peer_host)
+                print("lport: ", peer_port)
 
-            peer = init_conn((peer_host, peer_port))
-            give_peer(peer, self.selected_file, requested_file)
+                peer = init_conn((peer_host, peer_port))
+                give_peer(peer, self.selected_file, requested_file)
+            else:
+                print("peer is not connected")
 
             # download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
 
