@@ -231,6 +231,7 @@ class ParentWindow(Frame):
 
         def download():
             download_button['state'] = 'disabled'
+            #self.master.quit()
             selected = mylist.get(mylist.curselection())
             ##########################################################3
             requested_file = selected.split(", ")
@@ -250,10 +251,11 @@ class ParentWindow(Frame):
 
             peer = init_conn((peer_host, peer_port))
             give_peer(peer, self.selected_file, requested_file)
+            #self.download_file()
 
-            # download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
+            #download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
 
-            # self.master.quit()
+            
 
         download_button = tk.Button(text="Download", width=5, height=1, bg="white", fg="black", command=download)
         download_button.pack()

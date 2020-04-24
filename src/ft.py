@@ -74,7 +74,7 @@ def communicate(conn, client, buffer, prev_cmd):
 
         send_msg(conn, msg)
         return buffer, prev_cmd
-
+    
     else:
         print("invalid command was received\n")
         send_msg(conn, "ERROR\n\0")
@@ -94,6 +94,7 @@ def serve(conn, addr):
             buffer += msg
 
         buffer, prev_cmd = communicate(conn, addr, buffer, prev_cmd)
+        
 
 def main():
     global config
