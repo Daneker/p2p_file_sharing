@@ -93,11 +93,10 @@ def download_from_peer(conn, addr):
     print("download_from_peer()")
 
     while True:
-    # print("\n NOT WHILE\n")
         while "\0" not in buffer:
-            # print("received from peer_2: ", buffer)
             buffer += conn.recv(4096).decode("utf-8")
 
+        print("received from peer_2: ", buffer)
         idx = buffer.index("\0")
         msg = buffer[:idx-1]
         buffer = buffer[idx+1:]
