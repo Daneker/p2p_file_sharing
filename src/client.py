@@ -77,7 +77,7 @@ class ParentWindow(Frame):
                 config = json.load(file)
         else:
             config['host'] = 'localhost'
-            config['port'] = 45000
+            config['port'] = 45001
             json_save(config_file, config)
 
         # connect with server
@@ -258,7 +258,13 @@ class ParentWindow(Frame):
                 give_peer(peer, self.selected_file, requested_file)
             else:
                 print("peer is not connected")
-
+            
+            select_file.pack_forget()
+            mylist.pack_forget()
+            download_button.pack_forget()
+            scrollbar.pack_forget()
+            self.server_files = []
+            self.search()
             #download_from_peer(self.lhost, self.lport, self.selected_file, requested_file)
 
             
